@@ -1,0 +1,23 @@
+FROM ubuntu:xenial
+
+ENV CROSSTOOL_NG_URL "http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-1.22.0.tar.bz2"
+ENV PKG_SUFFIX .tar.bz2
+
+RUN apt-get update &&\
+    apt-get install -y build-essential git-core mercurial \
+                       wget bzip2 unzip \
+                       python3 python2.7 python-dev libzip-dev \
+                       automake libncurses5-dev gperf bison flex gawk \
+                       texinfo help2man libtool libtool-bin gcc-multilib \
+		       libexpat-dev expat sudo &&\
+    useradd -m ct-ng &&\
+    echo 'ct-ng ALL=NOPASSWD: ALL' > /etc/sudoers.d/crosstool &&\
+    mkdir -p /opt/cross/src &&\
+    cd /opt//cross/src &&\
+    wget $CROSSTOOL_NG_URL &&\
+    tar xvjf "$(basename $CROSSTOOL_NG_URL)" &&\
+    rm "$(basename $CROSSTOOL_NG_URL)" &&\
+    cd crosstool-ng &&\
+    ./configure --prefix=/opt/cross/ &&\
+    make &&\
+    make install
